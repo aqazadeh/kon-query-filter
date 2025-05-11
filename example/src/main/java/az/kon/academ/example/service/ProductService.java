@@ -34,7 +34,7 @@ public class ProductService {
     }
 
     public List<Product> findAll(Filter filter) {
-        var criteria = new Criteria(new ComparisonExpression("companyId", ComparisonOperator.EQ, "1"));
+        var criteria = new Criteria(new ComparisonExpression("userId", ComparisonOperator.EQ, "1"));
         filter.setSystemCriteria(criteria);
 
         return findProductsByFilter(filter);

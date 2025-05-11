@@ -1,8 +1,8 @@
 package az.kon.academ.filter.core;
 
 public class ComparisonExpression {
-    private String field;
     private ComparisonOperator operator;
+    private String field;
     private String value;
 
     public ComparisonExpression() {
