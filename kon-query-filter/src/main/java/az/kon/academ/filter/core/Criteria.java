@@ -8,6 +8,8 @@ public class Criteria {
     private List<Criteria> criteria;
     private ComparisonExpression comparison;
 
+    public Criteria() {}
+
     public Criteria(LogicalOperator logicalOperator, List<Criteria> criteria) {
         this.logicalOperator = logicalOperator;
         this.criteria = criteria;
@@ -32,7 +34,7 @@ public class Criteria {
     @Override
     public String toString() {
         if (comparison != null) {
-            return comparison.toString(); // ComparisonExpression'a delegasyon
+            return comparison.toString();
         } else {
             String criteriaString = criteria.stream()
                     .map(Criteria::toString)
