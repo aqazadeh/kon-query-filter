@@ -1,4 +1,4 @@
-# KON Query Filter
+# Query Filter
 
 A flexible and powerful Java library for building dynamic query filters with support for various comparison operators and logical combinations.
 
@@ -162,25 +162,112 @@ public class ProductController {
 ```json
 {
   "criteria": {
-    "logicalOperator": "AND",
+    "operator": "AND",
     "criteria": [
       {
-        "comparison": {
-          "field": "category",
-          "operator": "EQ",
-          "value": "Electronics"
-        }
+        "operator": "AND",
+        "criteria": [
+          {
+            "expression": {
+              "field": "category",
+              "operator": "EQ",
+              "value": "Electronics"
+            }
+          },
+          {
+            "expression": {
+              "field": "price",
+              "operator": "GT",
+              "value": 1000
+            }
+          }
+        ]
       },
       {
-        "comparison": {
-          "field": "price",
-          "operator": "LT",
-          "value": "1000"
-        }
+        "operator": "OR",
+        "criteria": [
+          {
+            "expression": {
+              "field": "status",
+              "operator": "EQ",
+              "value": "AVAILABLE"
+            }
+          },
+          {
+            "expression": {
+              "field": "quantity",
+              "operator": "GT",
+              "value": 50
+            }
+          }
+        ]
+      },
+      {
+        "operator": "OR",
+        "criteria": [
+          {
+            "expression": {
+              "field": "manufacturer",
+              "operator": "EQ",
+              "value": "Sony"
+            }
+          },
+          {
+            "expression": {
+              "field": "manufacturer",
+              "operator": "EQ",
+              "value": "Samsung"
+            }
+          }
+        ]
       }
     ]
   },
   "page": 0,
-  "size": 10
+  "size": 25
 }
+```
+
+## System Criteria
+
+The library supports adding system-level criteria that are automatically combined with user-provided criteria:
+
+```java
+// User filter from request
+Filter userFilter = ...; 
+
+// Add system criteria (e.g., for multi-tenancy)
+Criteria systemCriteria = new Criteria(new ComparisonExpression("userId", ComparisonOperator.EQ, "1"));
+userFilter.setSystemCriteria(systemCriteria);
+
+// The final filter will combine both user criteria and system criteria with AND operator
+```
+
+## Pagination
+
+The `Filter` class includes built-in support for pagination:
+
+```java
+// Create a filter with pagination (page 0, size 20)
+Filter filter = new Filter(criteria, 0, 20);
+
+// Or set pagination parameters separately
+filter.setPage(1);
+filter.setSize(50);
+```
+
+When using with Spring Data JPA, you can easily convert these parameters to a Spring `Pageable` object:
+
+```java
+Pageable pageable = Pageable.unpaged();
+
+if (filter.getSize() != null) {
+    pageable = Pageable.ofSize(filter.getSize());
+}
+
+if (filter.getPage() != null) {
+    pageable = pageable.withPage(filter.getPage());
+}
+
+return repository.findAll(specification, pageable);
 ```
