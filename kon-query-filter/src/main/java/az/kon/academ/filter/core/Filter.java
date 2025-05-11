@@ -1,7 +1,15 @@
 package az.kon.academ.filter.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.List;
+
 public class Filter {
     private Criteria criteria;
+
+    @JsonIgnore
+    private Criteria systemCriteria;
+
     private Integer page;
     private Integer size;
 
@@ -15,7 +23,15 @@ public class Filter {
     }
 
     public Criteria getCriteria() {
-        return criteria;
+        if (criteria == null && systemCriteria == null) {
+            return null;
+        } else if (criteria == null) {
+            return systemCriteria;
+        } else if (systemCriteria == null) {
+            return criteria;
+        } else {
+            return new Criteria(LogicalOperator.AND, List.of(criteria, systemCriteria));
+        }
     }
 
     public void setCriteria(Criteria criteria) {
@@ -37,6 +53,15 @@ public class Filter {
     public void setSize(Integer size) {
         this.size = size;
     }
+
+    public Criteria getSystemCriteria() {
+        return systemCriteria;
+    }
+
+    public void setSystemCriteria(Criteria systemCriteria) {
+        this.systemCriteria = systemCriteria;
+    }
+
 
     @Override
     public String toString() {

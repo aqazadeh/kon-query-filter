@@ -11,5 +11,11 @@
 
     <groupId>az.kon.academy.filter</groupId>
     <artifactId>kon-query-filter</artifactId>
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

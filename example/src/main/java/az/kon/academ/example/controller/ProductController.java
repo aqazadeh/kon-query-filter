@@ -27,6 +27,12 @@ public class ProductController {
         return productService.findProductsByFilter(filter);
     }
 
+    @PostMapping("/search/backend")
+    public List<Product> searchWithBackendCondition(@RequestBody Filter filter) {
+        log.info("Received request: {}", filter);
+        return productService.findAll(filter);
+    }
+
     @GetMapping("/example1")
     public List<Product> getExample1() {
         Criteria criteria = new Criteria(LogicalOperator.OR, List.of(

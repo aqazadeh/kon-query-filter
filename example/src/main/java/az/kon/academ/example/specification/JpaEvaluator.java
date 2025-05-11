@@ -30,19 +30,19 @@ public class JpaEvaluator implements FilterEvaluator<Predicate> {
     }
 
     private Predicate buildRecursive(Criteria criteria, Root<?> root, CriteriaBuilder criteriaBuilder) {
-        if (criteria.getLogicalOperator() != null) {
+        if (criteria.getOperator() != null) {
             List<Predicate> childrenPredicates = criteria.getCriteria().stream()
                     .map(childCriteria -> buildRecursive(childCriteria, root, criteriaBuilder))
                     .toList();
 
-            return switch (criteria.getLogicalOperator()) {
+            return switch (criteria.getOperator()) {
                 case AND -> criteriaBuilder.and(childrenPredicates.toArray(new Predicate[0]));
                 case OR -> criteriaBuilder.or(childrenPredicates.toArray(new Predicate[0]));
                 default ->
-                        throw new IllegalArgumentException("Unsupported logical type: " + criteria.getLogicalOperator());
+                        throw new IllegalArgumentException("Unsupported logical type: " + criteria.getOperator());
             };
-        } else if (criteria.getComparison() != null) {
-            return buildComparison(criteria.getComparison(), root, criteriaBuilder);
+        } else if (criteria.getExpression() != null) {
+            return buildComparison(criteria.getExpression(), root, criteriaBuilder);
         }
         return criteriaBuilder.conjunction();
     }

@@ -3,7 +3,7 @@ package az.kon.academ.example.service;
 import az.kon.academ.example.model.entity.Product;
 import az.kon.academ.example.repository.ProductRepository;
 import az.kon.academ.example.specification.FilterSpecification;
-import az.kon.academ.filter.core.Filter;
+import az.kon.academ.filter.core.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,5 +31,12 @@ public class ProductService {
         }
 
         return productRepository.findAll(spec, pageable).getContent();
+    }
+
+    public List<Product> findAll(Filter filter) {
+        var criteria = new Criteria(new ComparisonExpression("companyId", ComparisonOperator.EQ, "1"));
+        filter.setSystemCriteria(criteria);
+
+        return findProductsByFilter(filter);
     }
 }

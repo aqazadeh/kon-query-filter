@@ -4,41 +4,42 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Criteria {
-    private LogicalOperator logicalOperator;
+    private LogicalOperator operator;
     private List<Criteria> criteria;
-    private ComparisonExpression comparison;
+    private ComparisonExpression expression;
 
-    public Criteria() {}
+    public Criteria() {
+    }
 
-    public Criteria(LogicalOperator logicalOperator, List<Criteria> criteria) {
-        this.logicalOperator = logicalOperator;
+    public Criteria(LogicalOperator operator, List<Criteria> criteria) {
+        this.operator = operator;
         this.criteria = criteria;
     }
 
-    public Criteria(ComparisonExpression comparison) {
-        this.comparison = comparison;
+    public Criteria(ComparisonExpression expression) {
+        this.expression = expression;
     }
 
-    public LogicalOperator getLogicalOperator() {
-        return logicalOperator;
+    public LogicalOperator getOperator() {
+        return operator;
     }
 
     public List<Criteria> getCriteria() {
         return criteria;
     }
 
-    public ComparisonExpression getComparison() {
-        return comparison;
+    public ComparisonExpression getExpression() {
+        return expression;
     }
 
     @Override
     public String toString() {
-        if (comparison != null) {
-            return comparison.toString();
+        if (expression != null) {
+            return expression.toString();
         } else {
-            String criteriaString = criteria.stream()
+            String criteriaString = this.getCriteria().stream()
                     .map(Criteria::toString)
-                    .collect(Collectors.joining(" " + logicalOperator + " "));
+                    .collect(Collectors.joining(" " + operator + " "));
             return "(" + criteriaString + ")";
         }
     }
