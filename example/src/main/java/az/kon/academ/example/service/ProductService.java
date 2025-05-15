@@ -2,7 +2,7 @@ package az.kon.academ.example.service;
 
 import az.kon.academ.example.model.entity.Product;
 import az.kon.academ.example.repository.ProductRepository;
-import az.kon.academ.example.specification.FilterSpecification;
+import az.kon.academ.filter.evaluator.jpa.JpaSpecification;
 import az.kon.academ.filter.core.*;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class ProductService {
     }
 
     public List<Product> findProductsByFilter(Filter filter) {
-        FilterSpecification<Product> spec = FilterSpecification.byFilter(filter);
+        JpaSpecification<Product> spec = JpaSpecification.byFilter(filter);
         Pageable pageable = Pageable.unpaged();
 
         if (filter.getSize() != null) {

@@ -11,5 +11,7 @@ public enum ComparisonOperator {
     LT,
     LTE,
     IN,
-    BETWEEN;
+    BETWEEN,
+    IS_NULL,
+    IS_NOT_NULL;
 }

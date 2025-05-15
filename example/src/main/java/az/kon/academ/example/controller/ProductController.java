@@ -3,6 +3,8 @@ package az.kon.academ.example.controller;
 import az.kon.academ.example.model.entity.Product;
 import az.kon.academ.example.service.ProductService;
 import az.kon.academ.filter.core.*;
+import az.kon.academ.filter.evaluator.elasticsearch.ElasticsearchSpecification;
+import az.kon.academ.filter.evaluator.mongo.MongoSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +43,8 @@ public class ProductController {
         ));
 
         Filter filter = new Filter(criteria, 0, 100);
+        System.out.println(ElasticsearchSpecification.byFilter(filter).toQuery());
+        System.out.println(MongoSpecification.byFilter(filter).toQuery());
         return productService.findProductsByFilter(filter);
     }
 

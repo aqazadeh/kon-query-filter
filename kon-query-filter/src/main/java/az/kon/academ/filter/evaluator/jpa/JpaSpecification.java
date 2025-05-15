@@ -1,4 +1,4 @@
-package az.kon.academ.example.specification;
+package az.kon.academ.filter.evaluator.jpa;
 
 import az.kon.academ.filter.core.Filter;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -8,11 +8,11 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 
-public class FilterSpecification<T> implements Specification<T> {
+public class JpaSpecification<T> implements Specification<T> {
 
     private final Filter filter;
 
-    public FilterSpecification(Filter filter) {
+    public JpaSpecification(Filter filter) {
         this.filter = filter;
     }
 
@@ -21,7 +21,7 @@ public class FilterSpecification<T> implements Specification<T> {
         return new JpaEvaluator(root, criteriaBuilder).evaluate(filter);
     }
 
-    public static <T> FilterSpecification<T> byFilter(Filter filter) {
-        return new FilterSpecification<>(filter);
+    public static <T> JpaSpecification<T> byFilter(Filter filter) {
+        return new JpaSpecification<>(filter);
     }
 }

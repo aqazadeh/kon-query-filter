@@ -3,12 +3,12 @@ package az.kon.academ.filter.core;
 public class ComparisonExpression {
     private ComparisonOperator operator;
     private String field;
-    private String value;
+    private Object value;
 
     public ComparisonExpression() {
     }
 
-    public ComparisonExpression(String field, ComparisonOperator operator, String value) {
+    public ComparisonExpression(String field, ComparisonOperator operator, Object value) {
         this.field = field;
         this.operator = operator;
         this.value = value;
@@ -22,7 +22,7 @@ public class ComparisonExpression {
         return operator;
     }
 
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 

@@ -1,11 +1,13 @@
-package az.kon.academ.example.specification;
+package az.kon.academ.filter.evaluator.jpa;
 
 
 import az.kon.academ.filter.core.ComparisonExpression;
 import az.kon.academ.filter.core.Criteria;
 import az.kon.academ.filter.core.Filter;
 import az.kon.academ.filter.evaluator.FilterEvaluator;
+import az.kon.academ.filter.exception.FilterException;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
@@ -38,8 +40,7 @@ public class JpaEvaluator implements FilterEvaluator<Predicate> {
             return switch (criteria.getOperator()) {
                 case AND -> criteriaBuilder.and(childrenPredicates.toArray(new Predicate[0]));
                 case OR -> criteriaBuilder.or(childrenPredicates.toArray(new Predicate[0]));
-                default ->
-                        throw new IllegalArgumentException("Unsupported logical type: " + criteria.getOperator());
+                case NOT -> criteriaBuilder.not(childrenPredicates.get(0));
             };
         } else if (criteria.getExpression() != null) {
             return buildComparison(criteria.getExpression(), root, criteriaBuilder);
@@ -49,16 +50,34 @@ public class JpaEvaluator implements FilterEvaluator<Predicate> {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private Predicate buildComparison(ComparisonExpression c, Root<?> root, CriteriaBuilder criteriaBuilder) {
+        final Path path = root.get(c.getField());
+        final Object value = c.getValue();
         return switch (c.getOperator()) {
-            case EQ -> criteriaBuilder.equal(root.get(c.getField()), c.getValue());
-            case NEQ -> criteriaBuilder.notEqual(root.get(c.getField()), c.getValue());
-            case GT -> criteriaBuilder.greaterThan(root.get(c.getField()), (Comparable) c.getValue());
-            case GTE -> criteriaBuilder.greaterThanOrEqualTo(root.get(c.getField()), (Comparable) c.getValue());
-            case LT -> criteriaBuilder.lessThan(root.get(c.getField()), (Comparable) c.getValue());
-            case LTE -> criteriaBuilder.lessThanOrEqualTo(root.get(c.getField()), (Comparable) c.getValue());
-            case CONTAINS -> criteriaBuilder.like(root.get(c.getField()), "%" + c.getValue() + "%");
-            case STARTS -> criteriaBuilder.like(root.get(c.getField()), c.getValue() + "%");
-            default -> throw new IllegalArgumentException("Unsupported comparison type: " + c.getOperator());
+            case EQ -> criteriaBuilder.equal(path, value);
+            case NEQ -> criteriaBuilder.notEqual(path, value);
+            case GT -> criteriaBuilder.greaterThan(path, (Comparable) value);
+            case GTE -> criteriaBuilder.greaterThanOrEqualTo(path, (Comparable) value);
+            case LT -> criteriaBuilder.lessThan(path, (Comparable) value);
+            case LTE -> criteriaBuilder.lessThanOrEqualTo(path, (Comparable) value);
+            case CONTAINS -> criteriaBuilder.like(path, "%" + value + "%");
+            case STARTS -> criteriaBuilder.like(path, value + "%");
+            case ENDS -> criteriaBuilder.like(path, "%" + value);
+            case IN -> {
+                if (value instanceof List<?> listValue) {
+                    criteriaBuilder.in(path).value(listValue);
+                }
+                throw new FilterException("IN operator requires a list value");
+            }
+            case IS_NULL -> criteriaBuilder.isNull(path);
+            case IS_NOT_NULL -> criteriaBuilder.isNotNull(path);
+            case BETWEEN -> {
+                if (value instanceof List<?> list && list.size() == 2) {
+                    Object lower = list.get(0);
+                    Object upper = list.get(1);
+                    criteriaBuilder.between(path, (Comparable) lower, (Comparable) upper);
+                }
+                throw new FilterException("BETWEEN requires a list with exactly two values");
+            }
         };
     }
 }
